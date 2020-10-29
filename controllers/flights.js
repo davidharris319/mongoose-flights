@@ -1,4 +1,5 @@
 const Flight = require("../models/flight.js");
+const Ticket = require("../models/ticket.js");
 
 function newFlight(req, res) {
   res.render("flights/new", { title: "Add Flight" });
@@ -6,16 +7,19 @@ function newFlight(req, res) {
 
 function show(req, res) {
   Flight.findById(req.params.id, function (err, flight) {
-    res.render("flights/show", { title: "Flight Detail", flight });
+    console.log(flight);
+    Ticket.find({ flight: flight._id }, function (err, tickets) {
+      res.render("flights/show", {
+        title: "Flight Detail",
+        flight,
+        tickets,
+      });
+    });
   });
 }
 
 function create(req, res) {
-  for (let key in req.body) {
-    if (req.body[key] === "") delete req.body[key];
-  }
   const flight = new Flight(req.body);
-  console.log(flight);
   flight.save(function (err) {
     if (err) return res.render("flights/new");
     console.log(flight);
